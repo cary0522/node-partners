@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `Member` ADD COLUMN `birth` VARCHAR(191) NULL,
+    ADD COLUMN `location` VARCHAR(191) NULL,
+    ADD COLUMN `phone` VARCHAR(191) NULL;

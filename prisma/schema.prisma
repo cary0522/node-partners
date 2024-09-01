@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id          Int           @id @default(autoincrement())
+  userName    String?
+  account     String        @unique
+  password    String
+  createAt    DateTime      @default(now())
+  token       String?       @default(uuid())
+  phone       String?
+  location    String?
+  birth       String?
+  // UserOptions UserOptions[]
+}
+
+// model Order_item {
+//   id Int @id @default(autoincrement())
+// }
+
+// model Order {
+//   id Int @id @default(autoincrement())
+// }
+
+model AppearanceList {
+  id         Int    @id @default(autoincrement())
+  appearance String
+}
+
+model TraitList {
+  id       Int    @id @default(autoincrement())
+  trait    String
+  feedback String
+}
+
+model Interactive {
+  id               Int    @id @default(autoincrement())
+  interactive_type String
+}
+
+model Partners {
+  id              Int    @id @default(autoincrement())
+  appearanceOne   String @db.VarChar(20)
+  appearanceTwo   String @db.VarChar(20)
+  appearanceThree String @db.VarChar(20)
+  appearanceFour  String @db.VarChar(20)
+  feature         String @db.VarChar(50)
+  price           Int
+  image           Json?
+}
+
+model UserOptions {
+  id             Int    @id @default(autoincrement())
+  appearanceList Json
+  traitList      Json
+  // member_id      Int
+  // Member         Member @relation(fields: [member_id], references: [id])
+}
