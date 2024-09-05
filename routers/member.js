@@ -6,6 +6,8 @@ router.use(express.json());
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+var nodeBase64 = require("nodejs-base64-converter");
+
 var { v4: uuidv4 } = require("uuid");
 
 const { RecaptchaV2 } = require("express-recaptcha");
@@ -14,9 +16,9 @@ var recaptcha = new RecaptchaV2(
 	"6LdRjSAqAAAAAOhA6RJSuoDyhLX4D23iG2NvkJ34"
 );
 
-router.get('/',(req,res)=>{
-    res.send('member ok')
-})
+router.get("/", (req, res) => {
+	res.send("member ok");
+});
 
 // 註冊功能
 router.post("/register", async (req, res) => {
@@ -51,26 +53,28 @@ router.post("/register", async (req, res) => {
 
 // 登入功能
 router.post("/login", recaptcha.middleware.verify, async (req, res) => {
-	// 解構賦值取得傳送資料
-	const { loginAccount, loginPassword } = req.body;
-	console.log(req.body);
+	console.log(req.body.account, req.body.password);
+
 	if (!req.recaptcha.error) {
 		console.log("驗證成功");
 		try {
 			// 查詢資料庫內是否有此用戶資料
-			const user = await prisma.member.findUnique({
+			const user = await prisma.Member.findUnique({
 				where: {
-					account: loginAccount,
+					account: req.body.account,
 				},
 			});
-			if (!user) {
+			console.log("user:", user);
+			if (user === null) {
 				return res.json({ message: "使用者不存在" });
 			} else {
 				// 比較密碼
-				const match = await bcrypt.compare(loginPassword, user.password);
+				const match = await bcrypt.compare(req.body.password, user.password);
 				if (match) {
+					console.log("登入成功");
 					return res.json({ message: "登入成功", token: user.token });
 				} else {
+					console.log("密碼錯誤");
 					return res.json({ message: "密碼錯誤" });
 				}
 			}
@@ -108,4 +112,54 @@ router.post("/forgotPassword", (req, res) => {
 	console.log("ok");
 });
 
-module.exports=router
+// 取得會員資料顯示在會員後台
+router.post("/userData", async (req, res) => {
+	const userToken = req.body.token;
+	try {
+		const userData = await prisma.Member.findFirst({
+			where: { token: userToken },
+		});
+		res.json(userData);
+	} catch (err) {
+		console.log(err);
+	}
+});
+
+// 會員修改資料
+router.post("/modifyData", async (req, res) => {
+	try {
+		await prisma.Member.update({
+			where: { account: req.body.data.account.value },
+			data: {
+				userName: req.body.data.userName.value,
+				birth: req.body.data.birth.value,
+				location: req.body.data.location.value,
+				phone: req.body.data.phone.value,
+				photo: req.body.data.photo.value,
+			},
+		});
+		console.log("update ok");
+		res.json({ message: "update ok" });
+	} catch (err) {
+		console.log(err);
+	}
+});
+
+router.post("/uploadPhoto", async (req, res) => {
+	let photoBase = req.body.data.photo.replace(/^data:image\/\w+;base64,/, "");
+	let photoString = Buffer.from(photoBase, "base64");
+	try {
+		await prisma.Member.update({
+			where: { account: req.body.data.account },
+			data: {
+				photo: photoString,
+			},
+		});
+		console.log("upload ok");
+		res.json({ message: "upload ok" });
+	} catch (err) {
+		console.log(err);
+	}
+});
+
+module.exports = router;

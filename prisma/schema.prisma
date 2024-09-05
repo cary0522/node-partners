@@ -23,6 +23,7 @@ model Member {
   phone    String?
   location String?
   birth    String?
+  photo    Bytes?   @db.LongBlob
 }
 
 // model Order_item {
