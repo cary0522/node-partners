@@ -14,16 +14,15 @@ datasource db {
 }
 
 model Member {
-  id          Int           @id @default(autoincrement())
-  userName    String?
-  account     String        @unique
-  password    String
-  createAt    DateTime      @default(now())
-  token       String?       @default(uuid())
-  phone       String?
-  location    String?
-  birth       String?
-  // UserOptions UserOptions[]
+  id       Int      @id @default(autoincrement())
+  userName String?
+  account  String   @unique
+  password String
+  createAt DateTime @default(now())
+  token    String?  @default(uuid())
+  phone    String?
+  location String?
+  birth    String?
 }
 
 // model Order_item {
@@ -63,8 +62,7 @@ model Partners {
 
 model UserOptions {
   id             Int    @id @default(autoincrement())
+  partnerName    String
   appearanceList Json
   traitList      Json
-  // member_id      Int
-  // Member         Member @relation(fields: [member_id], references: [id])
 }
