@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
 var bcrypt = require("bcrypt");
-router.use(express.urlencoded({ extended: true }));
-router.use(express.json());
+router.use(express.urlencoded({ limit: "50mb", extended: true }));
+router.use(express.json({ limit: "50mb" }));
+
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -64,7 +65,6 @@ router.post("/login", recaptcha.middleware.verify, async (req, res) => {
 					account: req.body.account,
 				},
 			});
-			console.log("user:", user);
 			if (user === null) {
 				return res.json({ message: "使用者不存在" });
 			} else {
@@ -119,6 +119,9 @@ router.post("/userData", async (req, res) => {
 		const userData = await prisma.Member.findFirst({
 			where: { token: userToken },
 		});
+
+		const photoBase64 = userData.photo.toString("base64");
+		userData.photo = photoBase64;
 		res.json(userData);
 	} catch (err) {
 		console.log(err);
@@ -147,12 +150,14 @@ router.post("/modifyData", async (req, res) => {
 
 router.post("/uploadPhoto", async (req, res) => {
 	let photoBase = req.body.data.photo.replace(/^data:image\/\w+;base64,/, "");
+	let photoType = req.body.data.photoType;
 	let photoString = Buffer.from(photoBase, "base64");
 	try {
 		await prisma.Member.update({
 			where: { account: req.body.data.account },
 			data: {
 				photo: photoString,
+				photoType: photoType,
 			},
 		});
 		console.log("upload ok");

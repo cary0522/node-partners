@@ -14,16 +14,17 @@ datasource db {
 }
 
 model Member {
-  id       Int      @id @default(autoincrement())
-  userName String?
-  account  String   @unique
-  password String
-  createAt DateTime @default(now())
-  token    String?  @default(uuid())
-  phone    String?
-  location String?
-  birth    String?
-  photo    Bytes?   @db.LongBlob
+  id        Int      @id @default(autoincrement())
+  userName  String?
+  account   String   @unique
+  password  String
+  createAt  DateTime @default(now())
+  token     String?  @default(uuid())
+  phone     String?
+  location  String?
+  birth     String?
+  photo     Bytes?   @db.LongBlob
+  photoType String?
 }
 
 // model Order_item {
