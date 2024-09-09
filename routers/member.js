@@ -138,7 +138,6 @@ router.post("/modifyData", async (req, res) => {
 				birth: req.body.data.birth.value,
 				location: req.body.data.location.value,
 				phone: req.body.data.phone.value,
-				photo: req.body.data.photo.value,
 			},
 		});
 		console.log("update ok");
@@ -148,6 +147,7 @@ router.post("/modifyData", async (req, res) => {
 	}
 });
 
+// 會員上傳圖片
 router.post("/uploadPhoto", async (req, res) => {
 	let photoBase = req.body.data.photo.replace(/^data:image\/\w+;base64,/, "");
 	let photoType = req.body.data.photoType;
