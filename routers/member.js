@@ -119,9 +119,10 @@ router.post("/userData", async (req, res) => {
 		const userData = await prisma.Member.findFirst({
 			where: { token: userToken },
 		});
-
-		const photoBase64 = userData.photo.toString("base64");
-		userData.photo = photoBase64;
+		if (userData.photo) {
+			const photoBase64 = userData.photo.toString("base64");
+			userData.photo = photoBase64;
+		}
 		res.json(userData);
 	} catch (err) {
 		console.log(err);
@@ -162,6 +163,36 @@ router.post("/uploadPhoto", async (req, res) => {
 		});
 		console.log("upload ok");
 		res.json({ message: "upload ok" });
+	} catch (err) {
+		console.log(err);
+	}
+});
+
+// 修改密碼
+router.post("/modifyPassword", async (req, res) => {
+	try {
+		if (req.body.oldPassword) {
+			const user = await prisma.Member.findFirst({
+				where: {
+					token: req.body.token,
+				},
+			});
+			const match = await bcrypt.compare(req.body.oldPassword, user.password);
+			if (match) {
+				const newPasswordHash = await bcrypt.hash(req.body.newPassword, 10);
+				await prisma.Member.update({
+					where: { account: user.account },
+					data: { password: newPasswordHash },
+				});
+				res.json({ message: "修改完成，未來請以新密碼登入" });
+			} else {
+				res.json({ message: "請輸入正確密碼" });
+			}
+		} else {
+			res.json({ message: "請輸入正確密碼" });
+		}
+		console.log("modifyPassword:", req.body);
+		// res.json({ message: "Modify Success!" });
 	} catch (err) {
 		console.log(err);
 	}
