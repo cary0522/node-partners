@@ -150,12 +150,12 @@ router.post("/modifyData", async (req, res) => {
 
 // 會員上傳圖片
 router.post("/uploadPhoto", async (req, res) => {
-	let photoBase = req.body.data.photo.replace(/^data:image\/\w+;base64,/, "");
-	let photoType = req.body.data.photoType;
+	let photoBase = req.body.data[1].photo.replace(/^data:image\/\w+;base64,/, "");
+	let photoType = req.body.data[1].photoType;
 	let photoString = Buffer.from(photoBase, "base64");
 	try {
 		await prisma.Member.update({
-			where: { account: req.body.data.account },
+			where: { account: req.body.data[0] },
 			data: {
 				photo: photoString,
 				photoType: photoType,
