@@ -14,49 +14,27 @@ router.get("/trait", async (req, res) => {
 });
 
 // 取得用戶選取特質、外表資料
-router.get("/userOptions", async(req, res) => {
-	let userOptions = await prisma.userOptions.findUnique({where:{id:4}});
+router.get("/userOptions", async (req, res) => {
+	let userOptions = await prisma.userOptions.findUnique({ where: { id: 4 } });
 	res.send(userOptions);
 });
 
 // 傳入選取特質、外表資料
 router.post("/userOptions", async (req, res) => {
-	const {
-		partnerName,
-		appearanceOne,
-		appearanceTwo,
-		appearanceThree,
-		appearanceFour,
-		traitOne,
-		traitTwo,
-		traitThree,
-		traitFour,
-	} = req.body;
+	const { partnerName, appearanceList, traitsList } = req.body;
 
 	try {
 		if (req) {
 			await prisma.UserOptions.create({
 				data: {
 					partnerName: partnerName,
-					appearanceList: {
-						appearanceOne: appearanceOne,
-						appearanceTwo: appearanceTwo,
-						appearanceThree: appearanceThree,
-						appearanceFour: appearanceFour,
-					},
-					traitList: {
-						traitOne: traitOne,
-						traitTwo: traitTwo,
-						traitThree: traitThree,
-						traitFour: traitFour,
-					},
+					appearanceList: appearanceList,
+					traitList: traitsList,
 				},
 			});
-			console.log("req ok");
-			res.send("req ok");
+			res.send("update user's options");
 		} else {
-			console.log("no req");
-			res.send("no req");
+			res.send("no user's options");
 		}
 	} catch (err) {
 		console.log(err);
