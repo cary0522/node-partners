@@ -21,7 +21,7 @@ router.get("/userOptions", async (req, res) => {
 
 // 傳入選取特質、外表資料
 router.post("/userOptions", async (req, res) => {
-	const { partnerName, appearanceList, traitsList } = req.body;
+	const { partnerName, appearanceList, traitsList, owner } = req.body;
 
 	try {
 		if (req) {
@@ -30,6 +30,7 @@ router.post("/userOptions", async (req, res) => {
 					partnerName: partnerName,
 					appearanceList: appearanceList,
 					traitList: traitsList,
+					owner: owner,
 				},
 			});
 			res.send("update user's options");
